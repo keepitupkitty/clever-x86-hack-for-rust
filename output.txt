@@ -1,0 +1,81 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+VaList start: VaList(
+    VaListInner {
+        gp_offset: 8,
+        fp_offset: 48,
+        overflow_arg_area: 0x00007ffecd8c73e0,
+        reg_save_area: 0x00007ffecd8c7070,
+    },
+)
+ExtVaList start: ExtVaList(
+    ExtVaListInner {
+        gp_offset: 8,
+        fp_offset: 48,
+        overflow_arg_area: 0x00007ffecd8c73e0,
+        reg_save_area: 0x00007ffecd8c7070,
+    },
+)
+
+Your string: The string
+Your long double: [
+    0,
+    24,
+    174,
+    71,
+    225,
+    122,
+    20,
+    238,
+    2,
+    64,
+    140,
+    205,
+    254,
+    127,
+    0,
+    0,
+]
+Potential size_t: 69
+Your long double 2: [
+    0,
+    224,
+    122,
+    20,
+    174,
+    71,
+    97,
+    135,
+    5,
+    64,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+]
+
+VaList end: VaList(
+    VaListInner {
+        gp_offset: 16,
+        fp_offset: 48,
+        overflow_arg_area: 0x00007ffecd8c73f0,
+        reg_save_area: 0x00007ffecd8c7070,
+    },
+)
+ExtVaList end: ExtVaList(
+    ExtVaListInner {
+        gp_offset: 8,
+        fp_offset: 48,
+        overflow_arg_area: 0x00007ffecd8c73f0,
+        reg_save_area: 0x00007ffecd8c7070,
+    },
+)
+ExtVaList2: ExtVaList(
+    ExtVaListInner {
+        gp_offset: 16,
+        fp_offset: 48,
+        overflow_arg_area: 0x00007ffecd8c7400,
+        reg_save_area: 0x00007ffecd8c7070,
+    },
+)
