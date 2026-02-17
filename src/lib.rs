@@ -6,13 +6,14 @@ use {
     fmt,
     marker::PhantomCovariantLifetime
   },
-  std::intrinsics::{va_copy, va_end}
+  core::intrinsics::{va_copy, va_end}
 };
+
+use core::ffi::c_void;
 
 // X86-64
 #[cfg(target_arch = "x86_64")]
 mod this {
-
   use core::ffi::c_void;
 
   #[repr(C)]
@@ -22,6 +23,18 @@ mod this {
     pub fp_offset: i32,
     pub overflow_arg_area: *const c_void,
     pub reg_save_area: *const c_void
+  }
+}
+
+// X86
+#[cfg(target_arch = "x86")]
+mod this {
+  use core::ffi::c_void;
+
+  #[repr(C)]
+  #[derive(Debug, Clone, Copy)]
+  pub struct ExtVaListInner {
+    pub ptr: *const c_void
   }
 }
 
@@ -60,12 +73,25 @@ impl<'f> ExtVaList<'f> {
   #[inline]
   #[cfg(target_arch = "x86_64")]
   pub unsafe fn get_long_double_bits(&mut self) -> [u8; 16] {
-    let src = self.inner.overflow_arg_area as *const [u8; 16];
+    let aligned = self.inner.overflow_arg_area as usize & !15;
+    let src = aligned as *const [u8; 16];
+
     let result = unsafe { src.read() };
 
-    unsafe {
-      self.inner.overflow_arg_area = self.inner.overflow_arg_area.add(16)
-    };
+    self.inner.overflow_arg_area = (aligned + 16) as *const c_void;
+
+    result
+  }
+
+  #[inline]
+  #[cfg(target_arch = "x86")]
+  pub unsafe fn get_long_double_bits(&mut self) -> [u8; 12] {
+    let aligned = (self.inner.ptr as usize + 3) & !3;
+    let src = aligned as *const [u8; 12];
+
+    let result = unsafe { src.read() };
+
+    self.inner.ptr = (aligned + 12) as *const c_void;
 
     result
   }
