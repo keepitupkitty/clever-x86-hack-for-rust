@@ -1,15 +1,11 @@
 #![feature(c_variadic, phantom_variance_markers, core_intrinsics)]
 
-use {
-  core::{
-    ffi::{VaList, c_char},
-    fmt,
-    marker::PhantomCovariantLifetime
-  },
-  core::intrinsics::{va_copy, va_end}
+use core::{
+  ffi::{VaList, c_char, c_void},
+  fmt,
+  intrinsics::{va_copy, va_end},
+  marker::PhantomCovariantLifetime
 };
-
-use core::ffi::c_void;
 
 // X86-64
 #[cfg(target_arch = "x86_64")]
@@ -141,8 +137,7 @@ pub unsafe extern "C" fn my_test_c(
 
   unsafe { println!("Potential size_t: {}", args.arg::<usize>()) };
 
-  let mut t2 =
-    unsafe { ExtVaList::from_va_list(args.clone()) };
+  let mut t2 = unsafe { ExtVaList::from_va_list(args.clone()) };
   let ld2 = unsafe { t2.get_long_double_bits() };
 
   println!("Your long double 2: {:#?}\n", ld2);
