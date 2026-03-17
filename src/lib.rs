@@ -114,11 +114,11 @@ impl<'f> ExtVaList<'f> {
   pub unsafe fn get_long_double_bits(&mut self) -> [u8; 16] {
     let with_offset = self.inner.stack as usize + 15; // Advancing for the sake of alignment, yes, from 0 to 15, 16 digits in total, that's how you would understand it after reading aapcs64 
     let aligned = with_offset & !15; // Actually align
-    let src = align as *const [u8; 16];
+    let src = aligned as *const [u8; 16];
 
     let result = unsafe { src.read() };
 
-    self.inner.stack = (aligned + 16) as *const c_void
+    self.inner.stack = (aligned + 16) as *const c_void;
 
     result // Normal ieee 128 bit binary float value 
   }
