@@ -34,6 +34,23 @@ mod this {
   }
 }
 
+// ARM64
+#[cfg(target_arch = "aarch64")]
+mod this {
+  use core::ffi::c_void;
+
+  #[repr(C)]
+  #[derive(Debug, Clone, Copy)]
+  pub struct ExtVaListInner {
+    pub stack: *const c_void,
+    pub gr_top: *const c_void,
+    pub vr_top: *const c_void,
+    pub gr_offs: i32,
+    pub vr_offs: i32,
+  }
+}
+
+// transparent because typedef struct va_list { whatever } va_list;
 #[repr(transparent)]
 pub struct ExtVaList<'a> {
   inner: this::ExtVaListInner,
@@ -76,7 +93,7 @@ impl<'f> ExtVaList<'f> {
 
     self.inner.overflow_arg_area = (aligned + 16) as *const c_void;
 
-    result
+    result // 80-bit Intel value with 6 bytes padding for alignment
   }
 
   #[inline]
@@ -89,7 +106,21 @@ impl<'f> ExtVaList<'f> {
 
     self.inner.ptr = (aligned + 12) as *const c_void;
 
-    result
+    result // 80-bit Intel value with 2 bytes padding for alignment 
+  }
+
+  #[inline]
+  #[cfg(target_arch = "aarch64")]
+  pub unsafe fn get_long_double_bits(&mut self) -> [u8; 16] {
+    let with_offset = self.inner.stack as usize + 15; // Advancing for the sake of alignment, yes, from 0 to 15, 16 digits in total, that's how you would understand it after reading aapcs64 
+    let aligned = with_offset & !15; // Actually align
+    let src = align as *const [u8; 16];
+
+    let result = unsafe { src.read() };
+
+    self.inner.stack = (aligned + 16) as *const c_void
+
+    result // Normal ieee 128 bit binary float value 
   }
 }
 
